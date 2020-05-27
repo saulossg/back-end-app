@@ -28,6 +28,10 @@ export default class CreateTableTransaction1590471496631
             type: 'uuid',
           },
           {
+            name: 'type',
+            type: 'varchar',
+          },
+          {
             name: 'created_at',
             type: 'timestamp',
             default: 'now()',
