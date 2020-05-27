@@ -11,8 +11,6 @@ class DeleteTransactionService {
     try {
       const transaction = getRepository(Transaction);
 
-      transaction.find();
-
       await transaction.delete({ id });
     } catch (Error) {
       console.error(Erro);
