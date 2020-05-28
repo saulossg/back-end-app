@@ -21,7 +21,7 @@ export default class CreateTableTransaction1590471496631
           },
           {
             name: 'value',
-            type: 'varchar',
+            type: 'numeric',
           },
           {
             name: 'category_id',

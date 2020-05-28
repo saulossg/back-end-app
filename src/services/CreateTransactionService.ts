@@ -19,23 +19,19 @@ class CreateTransactionService {
     type,
     category,
   }: Request): Promise<Transaction> {
+    if (!['income', 'outcome'].includes(type)) {
+      throw new AppError('Invalid type, only income or outcome', 400);
+    }
+
     const transactionRepository = getRepository(Transaction);
     const categoryRepository = getRepository(Category);
 
-    let category_name = await categoryRepository.findOne({
+    const category_name = await categoryRepository.findOne({
       where: { title: category },
     });
 
     if (!category_name) {
-      const result = categoryRepository.create({
-        title: category,
-      });
-
-      await categoryRepository.save(result);
-
-      category_name = await categoryRepository.findOne({
-        where: { title: category },
-      });
+      throw new AppError('Category not exists', 400);
     }
 
     const transaction = transactionRepository.create({
