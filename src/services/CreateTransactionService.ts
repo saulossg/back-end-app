@@ -1,7 +1,7 @@
-import { getRepository } from 'typeorm';
+import { getRepository, getCustomRepository } from 'typeorm';
 import { uuid } from 'uuidv4';
 import AppError from '../errors/AppError';
-
+import TransactionsRepository from '../repositories/TransactionsRepository';
 import Transaction from '../models/Transaction';
 import Category from '../models/Category';
 
@@ -23,25 +23,35 @@ class CreateTransactionService {
       throw new AppError('Invalid type, only income or outcome', 400);
     }
 
-    const transactionRepository = getRepository(Transaction);
+    const transactionsRepository = getCustomRepository(TransactionsRepository);
     const categoryRepository = getRepository(Category);
 
-    const category_name = await categoryRepository.findOne({
+    const { total } = await transactionsRepository.getBalance();
+
+    if (type === 'outcome' && total < value) {
+      throw new AppError('You do not have enough balance');
+    }
+
+    let transactionCategory = await categoryRepository.findOne({
       where: { title: category },
     });
 
-    if (!category_name) {
-      throw new AppError('Category not exists', 400);
+    if (!transactionCategory) {
+      transactionCategory = categoryRepository.create({
+        title: category,
+      });
+
+      await categoryRepository.save(transactionCategory);
     }
 
-    const transaction = transactionRepository.create({
+    const transaction = transactionsRepository.create({
       title,
       value,
       type,
-      category_id: category_name.id,
+      category: transactionCategory,
     });
 
-    await transactionRepository.save(transaction);
+    await transactionsRepository.save(transaction);
 
     return transaction;
   }

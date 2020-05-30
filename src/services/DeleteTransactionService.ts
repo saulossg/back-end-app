@@ -13,7 +13,7 @@ class DeleteTransactionService {
 
       await transaction.delete({ id });
     } catch (Error) {
-      console.error(Erro);
+      console.error(Error);
     }
   }
 }

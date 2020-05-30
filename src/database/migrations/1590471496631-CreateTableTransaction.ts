@@ -20,16 +20,14 @@ export default class CreateTableTransaction1590471496631
             type: 'varchar',
           },
           {
-            name: 'value',
-            type: 'numeric',
-          },
-          {
-            name: 'category_id',
-            type: 'uuid',
-          },
-          {
             name: 'type',
             type: 'varchar',
+          },
+          {
+            name: 'value',
+            type: 'decimal',
+            precision: 10,
+            scale: 2,
           },
           {
             name: 'created_at',
