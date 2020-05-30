@@ -19,28 +19,24 @@ const upload = multer(uploadConfig);
 transactionsRouter.get('/', async (request, response) => {
   const transactionRepository = getCustomRepository(TransactionsRepository);
 
-  const transactions = transactionRepository.find();
+  const transactions = await transactionRepository.find();
   const balance = await transactionRepository.getBalance();
 
   return response.json({ transactions, balance });
 });
 
 transactionsRouter.post('/', async (request, response) => {
-  try {
-    const { title, value, type, category } = request.body;
-    const serviceTransaction = new CreateTransactionService();
+  const { title, value, type, category } = request.body;
+  const serviceTransaction = new CreateTransactionService();
 
-    const transaction = await serviceTransaction.execute({
-      title,
-      value,
-      type,
-      category,
-    });
+  const transaction = await serviceTransaction.execute({
+    title,
+    value,
+    type,
+    category,
+  });
 
-    return response.json(transaction);
-  } catch (err) {
-    return response.json(err);
-  }
+  return response.json(transaction);
 });
 
 transactionsRouter.delete('/:id', async (request, response) => {
@@ -48,27 +44,27 @@ transactionsRouter.delete('/:id', async (request, response) => {
 
   const deleteRepository = new DeleteTransactionService();
 
-  await deleteRepository.execute({ id });
+  await deleteRepository.execute(id);
 
-  return response.status(200).json({ message: 'Sucess' });
+  return response.status(204).send();
 });
 
-transactionsRouter.post(
-  '/import',
-  upload.single('file'),
-  async (request, response) => {
-    const service = new ImportTransactionsService();
+// transactionsRouter.post(
+//   '/import',
+//   upload.single('file'),
+//   async (request, response) => {
+//     const service = new ImportTransactionsService();
 
-    const { file } = request;
+//     const { file } = request;
 
-    const content = await fs.readFile(`${file.path}`);
+//     const content = await fs.readFile(`${file.path}`);
 
-    const records = parse(content);
+//     const records = parse(content);
 
-    service.execute(records);
+//     service.execute(records);
 
-    return response.json({ ok: true });
-  },
-);
+//     return response.json({ ok: true });
+//   },
+// );
 
 export default transactionsRouter;
